@@ -1,11 +1,11 @@
-import sys
 import ast
 import openai
-import re
 import os
 import time
 import dotenv
 import subprocess
+import os
+import fnmatch
 
 dotenv.load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -173,10 +173,6 @@ def add_docstrings_to_file(file_path, format=False):
         file.truncate()
     if format:
         subprocess.run(["black", file_path], capture_output=True, check=True, text=True)
-
-
-import os
-import fnmatch
 
 
 def document(path):
