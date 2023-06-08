@@ -3,6 +3,8 @@ from setuptools import setup, find_packages
 setup(
     name='chewbacca',
     version='0.3',
+    author='Landon Kleinbrodt',
+    author_email='lkleinbrodt@gmail.com',
     packages=find_packages(),
     install_requires = [
         'openai',
@@ -10,7 +12,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'chewbacca-document = src.document:main',
+            'chewbacca-document=src.cli:document',
         ],
     },
 )
