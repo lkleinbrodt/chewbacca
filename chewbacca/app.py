@@ -24,6 +24,18 @@ flask_app = Flask(__name__)
 handler = SlackRequestHandler(app)
 
 
+signature_verifier = SignatureVerifier(SLACK_SIGNING_SECRET)
+
+def require_slack_verification(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not verify_slack_request():
+            abort(403)
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
 def get_bot_user_id():
     """
     Get the bot user ID using the Slack API.
@@ -83,16 +95,6 @@ def slack_events():
 
 
 
-signature_verifier = SignatureVerifier(SLACK_SIGNING_SECRET)
-
-def require_slack_verification(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not verify_slack_request():
-            abort(403)
-        return f(*args, **kwargs)
-
-    return decorated_function
 
 
 def verify_slack_request():
