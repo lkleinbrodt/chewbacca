@@ -83,6 +83,19 @@ def handle_mentions(body, say):
     response = respond(body)
     say(response)
 
+@app.event('message')
+def handle_message(body, say):
+    """
+    Event listener for messages in Slack.
+    When a message is posted, this function processes the text and sends a response.
+
+    Args:
+        body (dict): The event data received from Slack.
+        say (callable): A function for sending a response to the channel.
+    """
+    # response = my_function(text)
+    response = respond(body)
+    say(response)
 
 @flask_app.route("/slack/events", methods=["POST"])
 @require_slack_verification
