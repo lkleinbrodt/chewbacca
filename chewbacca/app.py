@@ -70,6 +70,7 @@ def handle_mentions(body, say):
 
 
 @flask_app.route("/slack/events", methods=["POST"])
+@require_slack_verification
 def slack_events():
     """
     Route for handling Slack events.
@@ -81,34 +82,45 @@ def slack_events():
     return handler.handle(request)
 
 
-# Run the Flask app
-if __name__ == "__main__":
-    flask_app.run(port=5002)
+
+signature_verifier = SignatureVerifier(SLACK_SIGNING_SECRET)
+
+def require_slack_verification(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not verify_slack_request():
+            abort(403)
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
+def verify_slack_request():
+    # Get the request headers
+    timestamp = request.headers.get("X-Slack-Request-Timestamp", "")
+    signature = request.headers.get("X-Slack-Signature", "")
+
+    # Check if the timestamp is within five minutes of the current time
+    current_timestamp = int(time.time())
+    if abs(current_timestamp - int(timestamp)) > 60 * 5:
+        return False
+
+    # Verify the request signature
+    return signature_verifier.is_valid(
+        body=request.get_data().decode("utf-8"),
+        timestamp=timestamp,
+        signature=signature,
+    )
     
 
-from slack_sdk import WebClient
-from slack_sdk.errors import SlackApiError
-import os
 
-def get_recent_messages(channel_id, count=10):
-    """
-    Get the most recent messages sent in a Slack channel.
 
-    Args:
-        channel_id (str): The ID of the Slack channel to get messages from.
-        count (int): The number of messages to retrieve. Defaults to 10.
 
-    Returns:
-        list: A list of message dictionaries.
-    """
-    try:
-        # Initialize the Slack client with your bot token
-        slack_client = WebClient(token=os.environ["SLACK_BOT_TOKEN"])
-        response = slack_client.conversations_history(channel=channel_id, limit=count)
-        messages = response["messages"]
-        return messages
-    except SlackApiError as e:
-        print(f"Error: {e}")
-        return []
+# Run the Flask app
+if __name__ == "__main__":
+    flask_app.run(host='0.0.0.0', port = 8000)
+    
+
+
     
     

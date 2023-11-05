@@ -274,3 +274,32 @@ def respond(body):
     function = decide_function(text)
     response = function(text)
     return response
+
+
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
+import os
+
+def get_recent_messages(channel_id, count=10):
+    """
+    Get the most recent messages sent in a Slack channel.
+
+    Args:
+        channel_id (str): The ID of the Slack channel to get messages from.
+        count (int): The number of messages to retrieve. Defaults to 10.
+
+    Returns:
+        list: A list of message dictionaries.
+    """
+    try:
+        # Initialize the Slack client with your bot token
+        slack_client = WebClient(token=os.environ["SLACK_BOT_TOKEN"])
+        response = slack_client.conversations_history(channel=channel_id, limit=count)
+        messages = response["messages"]
+        return messages
+    except SlackApiError as e:
+        print(f"Error: {e}")
+        return []
+    
+    
+    
