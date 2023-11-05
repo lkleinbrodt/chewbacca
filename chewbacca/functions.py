@@ -2,6 +2,11 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
 from dotenv import find_dotenv, load_dotenv
 import os
+
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
+import os
+
 from langchain.prompts.chat import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
@@ -276,9 +281,7 @@ def respond(body):
     return response
 
 
-from slack_sdk import WebClient
-from slack_sdk.errors import SlackApiError
-import os
+
 
 def get_recent_messages(channel_id, count=10):
     """
