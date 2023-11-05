@@ -2,6 +2,7 @@ import os
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from slack_bolt.adapter.flask import SlackRequestHandler
+from slack_sdk.signature import SignatureVerifier
 from slack_bolt import App
 from dotenv import find_dotenv, load_dotenv
 from flask import Flask, request
@@ -22,8 +23,6 @@ app = App(token=SLACK_BOT_TOKEN)
 # Flask is a web application framework written in Python
 flask_app = Flask(__name__)
 handler = SlackRequestHandler(app)
-
-
 signature_verifier = SignatureVerifier(SLACK_SIGNING_SECRET)
 
 def require_slack_verification(f):
