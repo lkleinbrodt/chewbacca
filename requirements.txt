@@ -3,4 +3,6 @@ langchain
 openai
 slack-sdk 
 slack-bolt 
-flask
+Flask
+gunicorn
+urllib3<2
