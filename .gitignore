@@ -6,3 +6,7 @@ venv/
 *.pem
 dist/
 *.egg-info
+__pycache__/
+chewbacca
+credentials.json
+token.json
